@@ -9,6 +9,7 @@ const pool = new Pool({
   database: process.env.DB_NAME || "e_sotuv",
   user: process.env.DB_USER || "postgres",
   password: process.env.DB_PASSWORD,
+  ssl: process.env.DB_HOST === "localhost" ? false : { rejectUnauthorized: false },
 });
 
 pool.connect((err) => {
