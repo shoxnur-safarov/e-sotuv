@@ -38,7 +38,7 @@ export default function DashboardPage() {
     setLoading(true);
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch("${process.env.NEXT_PUBLIC_API_URL}/orders/analytics", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/orders/analytics`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();

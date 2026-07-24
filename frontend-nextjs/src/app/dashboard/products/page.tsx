@@ -31,7 +31,7 @@ export default function DashboardProductsPage() {
   const fetchProducts = async () => {
     setLoading(true);
     try {
-      const res = await fetch("${process.env.NEXT_PUBLIC_API_URL}/products?limit=100");
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/products?limit=100`);
       const data = await res.json();
       setProducts(data.data || []);
     } catch (err) {
@@ -98,7 +98,7 @@ export default function DashboardProductsPage() {
           body: JSON.stringify(body),
         });
       } else {
-        await fetch("${process.env.NEXT_PUBLIC_API_URL}/products", {
+        await fetch(`${process.env.NEXT_PUBLIC_API_URL}/products`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
