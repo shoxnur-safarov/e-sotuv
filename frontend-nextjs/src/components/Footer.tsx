@@ -4,14 +4,14 @@ export default function Footer() {
   return (
     <footer className="bg-[var(--surface)] border-t border-gray-200 dark:border-gray-800 mt-20">
       <div className="max-w-7xl mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 text-center md:text-left">
           {/* Brand */}
           <div className="flex flex-col gap-3">
             <h3 className="text-lg font-bold text-[var(--primary)]">E-Sotuv</h3>
             <p className="text-sm text-[var(--text-muted)] leading-relaxed">
               The leading platform for high-performance essentials and corporate lifestyle gear. Engineered for excellence.
             </p>
-            <div className="flex items-center gap-3 mt-2">
+            <div className="flex items-center gap-3 mt-2 justify-center md:justify-start">
               <button className="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center hover:bg-[var(--primary)] hover:text-white transition-colors text-sm">
                 🌐
               </button>

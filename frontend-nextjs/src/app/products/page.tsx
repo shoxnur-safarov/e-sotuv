@@ -47,22 +47,22 @@ function ProductsContent() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
-  const urlSearch = searchParams.get("search") || "";
-  const urlBrand = searchParams.get("brand") || "";
+    const urlSearch = searchParams.get("search") || "";
+    const urlBrand = searchParams.get("brand") || "";
 
-  // Faqat shu ichki qismlarni xavfsiz o'raymiz:
-  if (urlSearch) {
-    setTimeout(() => {
-      setSearch(urlSearch);
-    }, 0);
-  }
-  
-  if (urlBrand) {
-    setTimeout(() => {
-      setSelectedBrands([urlBrand]);
-    }, 0);
-  }
-}, [searchParams]);
+    // Faqat shu ichki qismlarni xavfsiz o'raymiz:
+    if (urlSearch) {
+      setTimeout(() => {
+        setSearch(urlSearch);
+      }, 0);
+    }
+
+    if (urlBrand) {
+      setTimeout(() => {
+        setSelectedBrands([urlBrand]);
+      }, 0);
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -107,7 +107,7 @@ function ProductsContent() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
-      <div className="flex items-center justify-between gap-4 mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div className="flex items-center gap-3">
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -119,7 +119,7 @@ function ProductsContent() {
         </div>
 
         <div className="flex items-center gap-3">
-          <input
+         <input
             type="text"
             placeholder="Qidirish..."
             value={search}
@@ -139,8 +139,8 @@ function ProductsContent() {
         </div>
       </div>
 
-      <div className="flex gap-8">
-        <aside className={`${sidebarOpen ? "block" : "hidden"} md:block w-64 shrink-0`}>
+      <div className="flex flex-col md:flex-row gap-8">
+        <aside className={`${sidebarOpen ? "block" : "hidden"} md:block w-full md:w-64 shrink-0`}>
           <div className="mb-8">
             <h3 className="font-semibold text-[var(--text)] mb-4">Narx Oralig&apos;i</h3>
             <input

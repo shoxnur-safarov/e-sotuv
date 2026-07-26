@@ -181,34 +181,34 @@ export default function Navbar() {
       )}
       {/* Mobile Menu */}
       {menuOpen && (
-        <div className="md:hidden border-t border-gray-200 dark:border-gray-800 px-4 py-4 flex flex-col gap-3">
-          <Link href="/products" onClick={() => setMenuOpen(false)} className="text-sm font-medium text-[var(--text)] hover:text-[var(--primary)] transition-colors">
+        <div className="md:hidden border-t border-gray-200 dark:border-gray-800 px-4 py-2 flex flex-col divide-y divide-gray-100 dark:divide-gray-800">
+          <Link href="/products" onClick={() => setMenuOpen(false)} className="py-3 text-sm font-medium text-[var(--text)] hover:text-[var(--primary)] transition-colors">
             Shop
           </Link>
-          <Link href="/products?category=all" onClick={() => setMenuOpen(false)} className="text-sm font-medium text-[var(--text-muted)] hover:text-[var(--primary)] transition-colors">
+          <Link href="/products?category=all" onClick={() => setMenuOpen(false)} className="py-3 text-sm font-medium text-[var(--text-muted)] hover:text-[var(--primary)] transition-colors">
             Categories
           </Link>
-          <Link href="/products?deals=true" onClick={() => setMenuOpen(false)} className="text-sm font-medium text-[var(--text-muted)] hover:text-[var(--primary)] transition-colors">
+          <Link href="/products?deals=true" onClick={() => setMenuOpen(false)} className="py-3 text-sm font-medium text-[var(--text-muted)] hover:text-[var(--primary)] transition-colors">
             Deals
           </Link>
 
           {mounted && user ? (
             <>
               {(user.role === "ADMIN" || user.role === "MANAGER") && (
-                <Link href="/dashboard" onClick={() => setMenuOpen(false)} className="text-sm font-medium text-[var(--text-muted)] hover:text-[var(--primary)] transition-colors">
+                <Link href="/dashboard" onClick={() => setMenuOpen(false)} className="py-3 text-sm font-medium text-[var(--text-muted)] hover:text-[var(--primary)] transition-colors">
                   Admin panel
                 </Link>
               )}
               <button
                 onClick={() => { handleLogout(); setMenuOpen(false); }}
-                className="flex items-center gap-2 text-sm font-medium text-[var(--error)] text-left"
+                className="flex items-center gap-2 py-3 text-sm font-medium text-[var(--error)] text-left"
               >
                 <LogOut size={15} />
                 Chiqish
               </button>
             </>
           ) : (
-            <Link href="/login" onClick={() => setMenuOpen(false)} className="text-sm font-medium text-[var(--text-muted)] hover:text-[var(--primary)] transition-colors">
+            <Link href="/login" onClick={() => setMenuOpen(false)} className="py-3 text-sm font-medium text-[var(--text-muted)] hover:text-[var(--primary)] transition-colors">
               Kirish
             </Link>
           )}
