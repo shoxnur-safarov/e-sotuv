@@ -14,9 +14,10 @@ interface Product {
   stock: number;
   image: string;
   badge: string | null;
+  rating: number;
 }
 
-const emptyForm = { name: "", price: "", brand: "Apple", stock: "", image: "", badge: "" };
+const emptyForm = { name: "", price: "", brand: "Apple", stock: "", image: "", badge: "", rating: "" };
 
 export default function DashboardProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -42,10 +43,10 @@ export default function DashboardProductsPage() {
   };
 
   useEffect(() => {
-  setTimeout(() => {
-    fetchProducts();
-  }, 0);
-}, []);
+    setTimeout(() => {
+      fetchProducts();
+    }, 0);
+  }, []);
 
   const filtered = products.filter((p) =>
     p.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -67,6 +68,7 @@ export default function DashboardProductsPage() {
       stock: String(product.stock),
       image: product.image,
       badge: product.badge || "",
+      rating: String(product.rating || ""),
     });
     setModalOpen(true);
   };
@@ -82,7 +84,7 @@ export default function DashboardProductsPage() {
       stock: Number(form.stock),
       image: form.image || "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600&h=600&fit=crop",
       badge: form.badge || null,
-      rating: 0,
+      rating: Number(form.rating) || 0,
       category: form.brand,
       description: `${form.name} — sifatli mahsulot.`,
     };
@@ -282,6 +284,19 @@ export default function DashboardProductsPage() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="flex flex-col gap-1">
                   <label className="text-sm font-medium text-[var(--text)]">Brend</label>
+                  <div className="flex flex-col gap-1">
+                    <label className="text-sm font-medium text-[var(--text)]">Reyting (0-5)</label>
+                    <input
+                      type="number"
+                      min="0" 
+                      max="5"
+                      step="0.1"
+                      placeholder="4.5"
+                      value={form.rating}
+                      onChange={(e) => setForm({ ...form, rating: e.target.value })}
+                      className="px-4 py-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-[var(--background)] text-[var(--text)] outline-none focus:border-[var(--primary)] transition-colors text-sm"
+                    />
+                  </div>
                   <select
                     value={form.brand}
                     onChange={(e) => setForm({ ...form, brand: e.target.value })}
