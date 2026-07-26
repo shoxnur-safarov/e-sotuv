@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { BarChart2, ShoppingCart, Package, Settings, Plus } from "lucide-react";
+import { BarChart2, ShoppingCart, Package, Settings, Plus, Menu, X } from "lucide-react";
 import { useEffect, useState } from "react";
 
 const navItems = [
@@ -16,6 +16,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const router = useRouter();
   const [authorized, setAuthorized] = useState(false);
   const [checking, setChecking] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     const userStr = localStorage.getItem("user");
@@ -29,10 +30,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       return;
     }
     setTimeout(() => {
-  setAuthorized(true);
-  setChecking(false);
-}, 0);
-     
+      setAuthorized(true);
+      setChecking(false);
+    }, 0);
+
   }, [router]);
 
   if (checking) {
@@ -47,13 +48,36 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   return (
     <div className="flex min-h-screen bg-[var(--background)]">
-      <aside className="w-56 shrink-0 bg-[var(--surface)] border-r border-gray-200 dark:border-gray-800 flex flex-col justify-between py-6 px-3 sticky top-0 h-screen">
+      {/* Mobile top bar */}
+      <div className="md:hidden fixed top-0 left-0 right-0 z-40 h-14 bg-[var(--surface)] border-b border-gray-200 dark:border-gray-800 flex items-center justify-between px-4">
+        <h2 className="text-base font-bold text-[var(--primary)]">E-Sotuv Admin</h2>
+        <button
+          onClick={() => setSidebarOpen(!sidebarOpen)}
+          className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+        >
+          {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
+        </button>
+      </div>
+
+      {/* Mobile overlay */}
+      {sidebarOpen && (
+        <div
+          className="md:hidden fixed inset-0 bg-black/50 z-40"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
+      <aside
+        className={`w-56 shrink-0 bg-[var(--surface)] border-r border-gray-200 dark:border-gray-800 flex flex-col justify-between py-6 px-3 fixed md:sticky top-0 h-screen z-50 transition-transform duration-200 ${
+          sidebarOpen ? "translate-x-0" : "-translate-x-full"
+        } md:translate-x-0`}
+      >
         <div>
-          <div className="px-3 mb-6">
+          <div className="px-3 mb-6 hidden md:block">
             <h2 className="text-lg font-bold text-[var(--primary)]">E-Sotuv Admin</h2>
           </div>
 
-          <div className="flex items-center gap-3 px-3 mb-8">
+          <div className="flex items-center gap-3 px-3 mb-8 mt-2 md:mt-0">
             <div className="w-9 h-9 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center text-sm font-bold text-white">
               A
             </div>
@@ -70,6 +94,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 <Link
                   key={href}
                   href={href}
+                  onClick={() => setSidebarOpen(false)}
                   className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${active
                       ? "bg-emerald-100 dark:bg-emerald-900 text-emerald-700 dark:text-emerald-300"
                       : "text-[var(--text-muted)] hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-[var(--text)]"
@@ -86,6 +111,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <div className="flex flex-col gap-2">
           <Link
             href="/dashboard"
+            onClick={() => setSidebarOpen(false)}
             className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-[var(--text-muted)] hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
           >
             <Settings size={18} />
@@ -93,6 +119,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </Link>
           <Link
             href="/dashboard/products"
+            onClick={() => setSidebarOpen(false)}
             className="flex items-center justify-center gap-2 mx-2 py-2.5 bg-[var(--primary)] text-white rounded-xl text-sm font-semibold hover:bg-[var(--primary-hover)] transition-colors"
           >
             <Plus size={16} />
@@ -101,7 +128,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </div>
       </aside>
 
-      <main className="flex-1 p-8 overflow-auto">{children}</main>
+      <main className="flex-1 p-4 md:p-8 pt-20 md:pt-8 overflow-auto">{children}</main>
     </div>
   );
 }
