@@ -258,7 +258,7 @@ export default function DashboardProductsPage() {
                 />
               </div>
 
-             <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-4">
                 <div className="flex flex-col gap-1">
                   <label className="text-sm font-medium text-[var(--text)]">Narx (so&apos;m)</label>
                   <input
@@ -333,6 +333,7 @@ export default function DashboardProductsPage() {
                   className="px-4 py-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-[var(--background)] text-[var(--text)] outline-none focus:border-[var(--primary)] transition-colors text-sm"
                 />
               </div>
+            </div>
 
             <div className="flex gap-3 mt-6">
               <button
