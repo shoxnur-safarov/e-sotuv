@@ -1,5 +1,18 @@
 import { Request, Response } from "express";
 import pool from "../config/postgres";
+import { z } from "zod";
+
+const productSchema = z.object({
+  name: z.string().min(2, "Nom kamida 2 ta belgidan iborat bo'lishi kerak").max(255),
+  price: z.number().positive("Narx musbat son bo'lishi kerak"),
+  image: z.string().url("Rasm URL noto'g'ri formatda").optional().or(z.literal("")),
+  rating: z.number().min(0).max(5).optional(),
+  stock: z.number().int().min(0, "Stok manfiy bo'lishi mumkin emas").optional(),
+  brand: z.string().max(100).optional(),
+  category: z.string().max(100).optional(),
+  description: z.string().optional(),
+  badge: z.string().max(50).nullable().optional(),
+});
 
 export async function getProducts(req: Request, res: Response) {
   try {
@@ -95,11 +108,13 @@ export async function getProductById(req: Request, res: Response) {
 
 export async function createProduct(req: Request, res: Response) {
   try {
-    const { name, price, image, rating, stock, brand, category, description, badge } = req.body;
-    if (!name || !price) {
-      res.status(400).json({ message: "Nom va narx majburiy" });
+    const parsed = productSchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({ message: parsed.error.issues[0].message });
       return;
     }
+    const { name, price, image, rating, stock, brand, category, description, badge } = parsed.data;
+
     const result = await pool.query(
       `INSERT INTO products (name, price, image, rating, stock, brand, category, description, badge)
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *`,
@@ -114,7 +129,13 @@ export async function createProduct(req: Request, res: Response) {
 export async function updateProduct(req: Request, res: Response) {
   try {
     const { id } = req.params;
-    const { name, price, image, rating, stock, brand, category, description, badge } = req.body;
+    const parsed = productSchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({ message: parsed.error.issues[0].message });
+      return;
+    }
+    const { name, price, image, rating, stock, brand, category, description, badge } = parsed.data;
+
     const result = await pool.query(
       `UPDATE products SET name=$1, price=$2, image=$3, rating=$4, stock=$5,
        brand=$6, category=$7, description=$8, badge=$9 WHERE id=$10 RETURNING *`,
