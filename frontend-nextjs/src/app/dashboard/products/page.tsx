@@ -258,7 +258,7 @@ export default function DashboardProductsPage() {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+             <div className="grid grid-cols-2 gap-4">
                 <div className="flex flex-col gap-1">
                   <label className="text-sm font-medium text-[var(--text)]">Narx (so&apos;m)</label>
                   <input
@@ -283,20 +283,20 @@ export default function DashboardProductsPage() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="flex flex-col gap-1">
+                  <label className="text-sm font-medium text-[var(--text)]">Reyting (0-5)</label>
+                  <input
+                    type="number"
+                    min="0"
+                    max="5"
+                    step="0.1"
+                    placeholder="4.5"
+                    value={form.rating}
+                    onChange={(e) => setForm({ ...form, rating: e.target.value })}
+                    className="px-4 py-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-[var(--background)] text-[var(--text)] outline-none focus:border-[var(--primary)] transition-colors text-sm"
+                  />
+                </div>
+                <div className="flex flex-col gap-1">
                   <label className="text-sm font-medium text-[var(--text)]">Brend</label>
-                  <div className="flex flex-col gap-1">
-                    <label className="text-sm font-medium text-[var(--text)]">Reyting (0-5)</label>
-                    <input
-                      type="number"
-                      min="0" 
-                      max="5"
-                      step="0.1"
-                      placeholder="4.5"
-                      value={form.rating}
-                      onChange={(e) => setForm({ ...form, rating: e.target.value })}
-                      className="px-4 py-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-[var(--background)] text-[var(--text)] outline-none focus:border-[var(--primary)] transition-colors text-sm"
-                    />
-                  </div>
                   <select
                     value={form.brand}
                     onChange={(e) => setForm({ ...form, brand: e.target.value })}
@@ -307,19 +307,20 @@ export default function DashboardProductsPage() {
                     ))}
                   </select>
                 </div>
-                <div className="flex flex-col gap-1">
-                  <label className="text-sm font-medium text-[var(--text)]">Badge</label>
-                  <select
-                    value={form.badge}
-                    onChange={(e) => setForm({ ...form, badge: e.target.value })}
-                    className="px-4 py-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-[var(--background)] text-[var(--text)] outline-none focus:border-[var(--primary)] transition-colors text-sm"
-                  >
-                    <option value="">Yo&apos;q</option>
-                    <option value="NEW">NEW</option>
-                    <option value="SALE">SALE</option>
-                    <option value="BESTSELLER">BESTSELLER</option>
-                  </select>
-                </div>
+              </div>
+
+              <div className="flex flex-col gap-1">
+                <label className="text-sm font-medium text-[var(--text)]">Badge</label>
+                <select
+                  value={form.badge}
+                  onChange={(e) => setForm({ ...form, badge: e.target.value })}
+                  className="px-4 py-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-[var(--background)] text-[var(--text)] outline-none focus:border-[var(--primary)] transition-colors text-sm"
+                >
+                  <option value="">Yo&apos;q</option>
+                  <option value="NEW">NEW</option>
+                  <option value="SALE">SALE</option>
+                  <option value="BESTSELLER">BESTSELLER</option>
+                </select>
               </div>
 
               <div className="flex flex-col gap-1">
@@ -332,7 +333,6 @@ export default function DashboardProductsPage() {
                   className="px-4 py-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-[var(--background)] text-[var(--text)] outline-none focus:border-[var(--primary)] transition-colors text-sm"
                 />
               </div>
-            </div>
 
             <div className="flex gap-3 mt-6">
               <button
