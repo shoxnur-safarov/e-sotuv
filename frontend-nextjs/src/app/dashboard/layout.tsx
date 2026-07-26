@@ -48,17 +48,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   return (
     <div className="flex min-h-screen bg-[var(--background)]">
-      {/* Mobile top bar */}
-      <div className="md:hidden fixed top-0 left-0 right-0 z-40 h-14 bg-[var(--surface)] border-b border-gray-200 dark:border-gray-800 flex items-center justify-between px-4">
-        <h2 className="text-base font-bold text-[var(--primary)]">E-Sotuv Admin</h2>
-        <button
-          onClick={() => setSidebarOpen(!sidebarOpen)}
-          className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
-        >
-          {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
-        </button>
-      </div>
-
+      {/* Mobile floating toggle button */}
+      <button
+        onClick={() => setSidebarOpen(!sidebarOpen)}
+        className="md:hidden fixed bottom-6 right-6 z-[60] w-14 h-14 rounded-full bg-[var(--primary)] text-white flex items-center justify-center shadow-lg"
+      >
+        {sidebarOpen ? <X size={22} /> : <Menu size={22} />}
+      </button>
       {/* Mobile overlay */}
       {sidebarOpen && (
         <div
@@ -68,9 +64,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       )}
 
       <aside
-        className={`w-56 shrink-0 bg-[var(--surface)] border-r border-gray-200 dark:border-gray-800 flex flex-col justify-between py-6 px-3 fixed md:sticky top-0 h-screen z-50 transition-transform duration-200 ${
-          sidebarOpen ? "translate-x-0" : "-translate-x-full"
-        } md:translate-x-0`}
+        className={`w-56 shrink-0 bg-[var(--surface)] border-r border-gray-200 dark:border-gray-800 flex flex-col justify-between py-6 px-3 fixed md:sticky top-0 h-screen z-[60] transition-transform duration-200 ${sidebarOpen ? "translate-x-0" : "-translate-x-full"
+          } md:translate-x-0`}
       >
         <div>
           <div className="px-3 mb-6 hidden md:block">
@@ -96,8 +91,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   href={href}
                   onClick={() => setSidebarOpen(false)}
                   className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${active
-                      ? "bg-emerald-100 dark:bg-emerald-900 text-emerald-700 dark:text-emerald-300"
-                      : "text-[var(--text-muted)] hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-[var(--text)]"
+                    ? "bg-emerald-100 dark:bg-emerald-900 text-emerald-700 dark:text-emerald-300"
+                    : "text-[var(--text-muted)] hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-[var(--text)]"
                     }`}
                 >
                   <Icon size={18} />
@@ -128,7 +123,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </div>
       </aside>
 
-      <main className="flex-1 p-4 md:p-8 pt-20 md:pt-8 overflow-auto">{children}</main>
+      <main className="flex-1 p-4 md:p-8 overflow-auto">{children}</main>
     </div>
   );
 }
