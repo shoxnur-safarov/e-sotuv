@@ -68,35 +68,8 @@ O'zgaruvchi	Tavsif
 NEXT_PUBLIC_API_URL	Backend API manzili (masalan http://localhost:5000/api/v1)
 Loyiha strukturasi
 e-sotuv/
-├── backend-nodejs/
-│   ├── src/
-│   │   ├── config/              # PostgreSQL ulanishi (postgres.ts)
-│   │   ├── controllers/         # Biznes logika (auth, product, order)
-│   │   ├── middlewares/         # JWT auth, rol tekshirish, xatoliklarni boshqarish
-│   │   └── routes/               # API endpoint'lari (auth, product, order)
-│   └── package.json
-│
-├── frontend-nextjs/
-│   ├── public/
-│   │   └── images/               # Statik rasmlar, logotip
-│   ├── src/
-│   │   ├── app/                   # Sahifalar (Next.js App Router)
-│   │   │   ├── cart/               # Savat sahifasi
-│   │   │   ├── checkout/           # Buyurtma berish (checkout) oqimi
-│   │   │   ├── dashboard/          # Admin panel
-│   │   │   │   ├── orders/          # Buyurtmalarni boshqarish
-│   │   │   │   └── products/        # Mahsulotlarni boshqarish (CRUD)
-│   │   │   ├── login/               # Kirish sahifasi
-│   │   │   ├── products/            # Mahsulotlar katalogi
-│   │   │   │   └── [id]/             # Bitta mahsulot — batafsil sahifa
-│   │   │   └── register/            # Ro'yxatdan o'tish
-│   │   ├── components/            # Qayta ishlatiladigan UI komponentlar (Navbar, Footer va h.k.)
-│   │   │   └── ui/                  # Kichik, asosiy UI elementlari (Badge va h.k.)
-│   │   ├── lib/                    # Yordamchi funksiyalar, axios instance
-│   │   ├── store/                  # Zustand state boshqaruvi (savat va h.k.)
-│   │   └── types/                  # TypeScript interfeys/tur ta'riflari
-│   └── package.json
-│
+├── backend-nodejs/        # Express API (auth, products, orders)
+├── frontend-nextjs/       # Next.js ilovasi (foydalanuvchi va admin panel)
 └── README.md
 Muallif
 
