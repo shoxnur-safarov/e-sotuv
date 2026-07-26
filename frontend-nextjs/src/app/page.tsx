@@ -39,7 +39,7 @@ export default function HomePage() {
   useEffect(() => {
     const fetchFeatured = async () => {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/products`);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/products?limit=4`);
         const data = await res.json();
         setProducts(data.data || []);
       } catch (err) {
