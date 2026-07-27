@@ -38,6 +38,8 @@ function StarRating({ rating }: { rating: number }) {
 function ProductsContent() {
   const searchParams = useSearchParams();
   const deals = searchParams.get("deals"); // 👈 1. Deals parametrik ushlab olindi
+  const categoryParam = searchParams.get("category"); // 👈 Kategoriya o'qildi
+  const sortParam = searchParams.get("sort"); // 👈 URL'dan sort o'qildi
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
@@ -50,18 +52,14 @@ function ProductsContent() {
   useEffect(() => {
     const urlSearch = searchParams.get("search") || "";
     const urlBrand = searchParams.get("brand") || "";
+    const urlSort = searchParams.get("sort") || "default";
 
-    if (urlSearch) {
-      setTimeout(() => {
-        setSearch(urlSearch);
-      }, 0);
-    }
-
-    if (urlBrand) {
-      setTimeout(() => {
-        setSelectedBrands([urlBrand]);
-      }, 0);
-    }
+    // Callbacks un-synchronize qilinadi (microtask event loop)
+    setTimeout(() => {
+      setSearch(urlSearch);
+      if (urlBrand) setSelectedBrands([urlBrand]);
+      if (urlSort) setSort(urlSort);
+    }, 0);
   }, [searchParams]);
 
   useEffect(() => {
@@ -70,6 +68,7 @@ function ProductsContent() {
       try {
         const params = new URLSearchParams();
         if (deals === "true") params.append("deals", "true"); // 👈 2. API'ga parametr uzatildi
+        if (categoryParam) params.append("category", categoryParam);
         if (search) params.append("search", search);
         if (selectedBrands.length === 1) params.append("brand", selectedBrands[0]);
         if (maxPrice < 10000000) params.append("max_price", String(maxPrice));
@@ -94,7 +93,7 @@ function ProductsContent() {
       }
     };
     fetchProducts();
-  }, [search, selectedBrands, maxPrice, minRating, sort, deals]); // 👈 3. 'deals' qo'shildi
+  }, [search, selectedBrands, maxPrice, minRating, sort, deals, categoryParam, sortParam]); // 👈 3. 'deals' qo'shildi
 
   const toggleBrand = (brand: string) => {
     setSelectedBrands((prev) =>
@@ -104,8 +103,25 @@ function ProductsContent() {
 
   // 👈 4. Frontend filtriga ham deals nazorati qo'shildi
   const filtered = products
+    // 1. Deals (Chegirmalar) filtri
     .filter((p) => (deals === "true" ? p.badge === "SALE" : true))
-    .filter((p) => (selectedBrands.length > 1 ? selectedBrands.includes(p.brand) : true));
+
+    // 2. New Arrivals filtri
+    .filter((p) => (sortParam === "newest" ? p.badge === "NEW" : true))
+
+    // 3. Bestseller filtri (Badge "HOT"/"BEST" bo'lsa NEKI reytingi 4.5+ bo'lsa)
+    .filter((p) => {
+      if (sortParam === "bestseller") {
+        return p.badge === "HOT" || p.badge === "BEST" || p.rating >= 4.5;
+      }
+      return true;
+    })
+
+    // 4. Brendlar filtri
+    .filter((p) => (selectedBrands.length > 0 ? selectedBrands.includes(p.brand) : true))
+
+    // 5. Narx va Reyting filtri
+    .filter((p) => p.price <= maxPrice && p.rating >= minRating);
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
