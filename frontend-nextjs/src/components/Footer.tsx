@@ -1,105 +1,82 @@
-import Link from "next/link";
+import Link from 'next/link';
 
 export default function Footer() {
   return (
-    <footer className="bg-[var(--surface)] border-t border-gray-200 dark:border-gray-800 mt-24">
-      <div className="max-w-7xl mx-auto px-6 py-16">
+    <footer className="w-full border-t border-zinc-800 bg-black py-12 text-sm text-zinc-400">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         
-        {/* Ustunlar Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-10 md:gap-16 text-left">
+        {/* Yuqori qism: Mobilda 2 ustun, kompyuterda 5 ustun */}
+        <div className="grid grid-cols-2 gap-8 md:grid-cols-5">
           
-          {/* Brand */}
-          <div className="flex flex-col gap-4">
-            <Link 
-              href="/" 
-              className="text-xl font-bold tracking-tight text-[var(--primary)] hover:opacity-80 transition-opacity"
-            >
+          {/* Logo va Ta'rif */}
+          <div className="col-span-2 md:col-span-2">
+            <h2 className="text-xl font-bold tracking-tight text-red-600">
               E-Sotuv
-            </Link>
-            <p className="text-xs text-[var(--text-muted)] leading-relaxed max-w-xs">
+            </h2>
+            <p className="mt-3 max-w-sm text-xs leading-relaxed text-zinc-400">
               The leading platform for high-performance essentials and corporate lifestyle gear. Engineered for excellence.
             </p>
           </div>
 
           {/* SHOP */}
-          <div className="flex flex-col gap-3.5">
-            <h4 className="text-xs font-semibold text-[var(--text)] uppercase tracking-wider">
+          <div>
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-white">
               Shop
-            </h4>
-            <div className="flex flex-col gap-2.5 text-xs">
-              <Link href="/products" className="text-[var(--text-muted)] hover:text-[var(--primary)] transition-colors">
-                All Products
-              </Link>
-              <Link href="/products?category=electronics" className="text-[var(--text-muted)] hover:text-[var(--primary)] transition-colors">
-                Top Categories
-              </Link>
-              <Link href="/products?sort=bestseller" className="text-[var(--text-muted)] hover:text-[var(--primary)] transition-colors">
-                Bestsellers
-              </Link>
-              <Link href="/products?sort=newest" className="text-[var(--text-muted)] hover:text-[var(--primary)] transition-colors">
-                New Arrivals
-              </Link>
-            </div>
+            </h3>
+            <ul className="mt-3 space-y-2">
+              <li><Link href="/products" className="transition-colors hover:text-white">All Products</Link></li>
+              <li><Link href="/products?category=top" className="transition-colors hover:text-white">Top Categories</Link></li>
+              <li><Link href="/products?sort=bestsellers" className="transition-colors hover:text-white">Bestsellers</Link></li>
+              <li><Link href="/products?sort=newest" className="transition-colors hover:text-white">New Arrivals</Link></li>
+            </ul>
           </div>
 
-          {/* ACCOUNT */}
-          <div className="flex flex-col gap-3.5">
-            <h4 className="text-xs font-semibold text-[var(--text)] uppercase tracking-wider">
+          {/* ACCOUNT - Barcha 4 ta havola va to'g'ri routelar */}
+          <div>
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-white">
               Account
-            </h4>
-            <div className="flex flex-col gap-2.5 text-xs">
-              <Link href="/cart" className="text-[var(--text-muted)] hover:text-[var(--primary)] transition-colors">
-                Cart
-              </Link>
-              <Link href="/dashboard" className="text-[var(--text-muted)] hover:text-[var(--primary)] transition-colors">
-                Dashboard
-              </Link>
-              <Link href="/login" className="text-[var(--text-muted)] hover:text-[var(--primary)] transition-colors">
-                Sign In
-              </Link>
-              <Link href="/register" className="text-[var(--text-muted)] hover:text-[var(--primary)] transition-colors">
-                Create Account
-              </Link>
-            </div>
+            </h3>
+            <ul className="mt-3 space-y-2">
+              <li><Link href="/cart" className="transition-colors hover:text-white">Cart</Link></li>
+              <li><Link href="/dashboard" className="transition-colors hover:text-white">Dashboard</Link></li>
+              <li><Link href="/login" className="transition-colors hover:text-white">Sign In</Link></li>
+              <li><Link href="/register" className="transition-colors hover:text-white">Create Account</Link></li>
+            </ul>
           </div>
 
-          {/* OFFICE & TELEGRAM */}
-          <div className="flex flex-col gap-3.5">
-            <h4 className="text-xs font-semibold text-[var(--text)] uppercase tracking-wider">
+          {/* OFFICE */}
+          <div className="col-span-2 sm:col-span-1 md:col-span-1">
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-white">
               Office
-            </h4>
-            <div className="flex flex-col gap-1.5 text-xs text-[var(--text-muted)]">
+            </h3>
+            <address className="mt-3 not-italic space-y-1 text-xs text-zinc-400">
               <p>124 Innovation Way</p>
               <p>Silicon District</p>
               <p>Jizzax, Uzbekistan</p>
-            </div>
-
-            {/* Telegram - Ranglar to'g'rilandi (Aniq, tiniq va kontrastli) */}
-            <div className="mt-2">
+            </address>
+            <div className="mt-4">
               <a
                 href="https://t.me/shoxnursafarov"
                 target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-[var(--primary)] text-white hover:opacity-90 text-xs font-medium transition-all shadow-sm"
+                rel="noreferrer"
+                className="inline-flex items-center gap-2 rounded-full bg-red-900 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-red-800"
               >
-                <span>💬</span>
-                <span>@shoxnursafarov</span>
+                <span>💬</span> @shoxnursafarov
               </a>
             </div>
           </div>
 
         </div>
 
-        {/* Bottom Line */}
-        <div className="border-t border-gray-200 dark:border-gray-800 mt-12 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[var(--text-muted)]">
+        {/* Chiziq */}
+        <div className="mt-10 border-t border-zinc-800 pt-6" />
+
+        {/* Bottom Bar */}
+        <div className="flex flex-col items-center justify-between gap-4 text-center text-xs md:flex-row md:text-left">
           <p>© 2026 E-Sotuv Platform. All rights reserved.</p>
-          <div className="flex items-center gap-6">
-            <span className="hover:text-[var(--primary)] transition-colors cursor-pointer">
-              Privacy Policy
-            </span>
-            <span className="hover:text-[var(--primary)] transition-colors cursor-pointer">
-              Terms of Service
-            </span>
+          <div className="flex gap-6">
+            <Link href="/privacy" className="transition-colors hover:text-white">Privacy Policy</Link>
+            <Link href="/terms" className="transition-colors hover:text-white">Terms of Service</Link>
           </div>
         </div>
 
