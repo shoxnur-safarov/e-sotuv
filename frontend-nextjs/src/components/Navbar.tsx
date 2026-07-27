@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
-import { ShoppingCart, Search, Bell, User, Menu, X, LogOut } from "lucide-react";
+import { ShoppingCart, Search, Bell, User, Menu, X, LogOut, ChevronDown } from "lucide-react";
 import { useState, useEffect, useRef, Suspense } from "react";
 import CartBadge from "@/components/CartBadge";
 
@@ -11,6 +11,11 @@ interface UserData {
   email: string;
   role: string;
 }
+
+// Kategoriyalar ro'yxati (Kerak bo'lsa yangi kategoriya qo'shishingiz mumkin)
+const CATEGORIES = [
+  { name: "Electronics", slug: "electronics" },
+];
 
 function NavbarContent() {
   const router = useRouter();
@@ -21,16 +26,21 @@ function NavbarContent() {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
+  const [categoriesOpen, setCategoriesOpen] = useState(false);
+  const [mobileCatOpen, setMobileCatOpen] = useState(false);
+  
   const [user, setUser] = useState<UserData | null>(null);
   const [mounted, setMounted] = useState(false);
+  
   const profileRef = useRef<HTMLDivElement>(null);
+  const categoriesRef = useRef<HTMLDivElement>(null);
 
   // Active link holatini aniqlash
   const categoryParam = searchParams.get("category");
   const dealsParam = searchParams.get("deals");
 
   const isDealsActive = pathname === "/products" && dealsParam === "true";
-  const isCategoriesActive = pathname === "/products" && categoryParam === "all";
+  const isCategoriesActive = pathname === "/products" && !!categoryParam;
   const isShopActive = pathname === "/products" && !dealsParam && !categoryParam;
 
   useEffect(() => {
@@ -43,10 +53,14 @@ function NavbarContent() {
     }, 0);
   }, []);
 
+  // Tashqariga bosilganda profil va kategoriyalar menyusini yopish
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (profileRef.current && !profileRef.current.contains(e.target as Node)) {
         setProfileOpen(false);
+      }
+      if (categoriesRef.current && !categoriesRef.current.contains(e.target as Node)) {
+        setCategoriesOpen(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -73,43 +87,81 @@ function NavbarContent() {
 
         {/* Desktop Nav */}
         <nav className="hidden md:flex items-center gap-7">
+          {/* Shop */}
           <Link
             href="/products"
-            className={`py-1 text-sm font-medium transition-colors border-b-2 ${isShopActive
-              ? "border-[var(--primary)] text-[var(--primary)] font-semibold"
-              : "border-transparent text-[var(--text-muted)] hover:text-[var(--primary)]"
-              }`}
+            className={`py-1 text-sm font-medium transition-colors border-b-2 ${
+              isShopActive
+                ? "border-[var(--primary)] text-[var(--primary)] font-semibold"
+                : "border-transparent text-[var(--text-muted)] hover:text-[var(--primary)]"
+            }`}
           >
             Shop
           </Link>
 
-          <Link
-            href="/products?category=all"
-            className={`py-1 text-sm font-medium transition-colors border-b-2 ${isCategoriesActive
-              ? "border-[var(--primary)] text-[var(--primary)] font-semibold"
-              : "border-transparent text-[var(--text-muted)] hover:text-[var(--primary)]"
-              }`}
+          {/* Categories Dropdown */}
+          <div 
+            className="relative" 
+            ref={categoriesRef}
+            onMouseEnter={() => setCategoriesOpen(true)}
+            onMouseLeave={() => setCategoriesOpen(false)}
           >
-            Categories
-          </Link>
+            <button
+              onClick={() => setCategoriesOpen(!categoriesOpen)}
+              className={`py-1 text-sm font-medium transition-colors border-b-2 flex items-center gap-1 ${
+                isCategoriesActive
+                  ? "border-[var(--primary)] text-[var(--primary)] font-semibold"
+                  : "border-transparent text-[var(--text-muted)] hover:text-[var(--primary)]"
+              }`}
+            >
+              Categories
+              <ChevronDown size={14} className={`transition-transform duration-200 ${categoriesOpen ? "rotate-180" : ""}`} />
+            </button>
 
+            {/* Dropdown Menu */}
+            {categoriesOpen && (
+              <div className="absolute top-full left-0 w-48 pt-2 z-50">
+                <div className="bg-[var(--surface)] border border-gray-200 dark:border-gray-800 rounded-xl shadow-lg py-1.5 overflow-hidden">
+                  {CATEGORIES.map((cat) => (
+                    <Link
+                      key={cat.slug}
+                      href={`/products?category=${cat.slug}`}
+                      onClick={() => setCategoriesOpen(false)}
+                      className={`block px-4 py-2 text-sm transition-colors ${
+                        categoryParam === cat.slug
+                          ? "bg-gray-100 dark:bg-gray-800 text-[var(--primary)] font-semibold"
+                          : "text-[var(--text)] hover:bg-gray-50 dark:hover:bg-gray-900"
+                      }`}
+                    >
+                      {cat.name}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Deals */}
           <Link
             href="/products?deals=true"
-            className={`py-1 text-sm font-medium transition-colors border-b-2 ${isDealsActive
-              ? "border-[var(--primary)] text-[var(--primary)] font-semibold"
-              : "border-transparent text-[var(--text-muted)] hover:text-[var(--primary)]"
-              }`}
+            className={`py-1 text-sm font-medium transition-colors border-b-2 ${
+              isDealsActive
+                ? "border-[var(--primary)] text-[var(--primary)] font-semibold"
+                : "border-transparent text-[var(--text-muted)] hover:text-[var(--primary)]"
+            }`}
           >
             Deals
           </Link>
 
+          {/* Admin */}
           {user && (user.role === "ADMIN" || user.role === "MANAGER") && (
             <Link
               href="/dashboard"
-              className={`py-1 text-sm font-medium transition-colors border-b-2 ${pathname.startsWith("/dashboard")
-                ? "border-[var(--primary)] text-[var(--primary)] font-semibold"
-                : "border-transparent text-[var(--text-muted)] hover:text-[var(--primary)]"
-                }`}
+              className={`py-1 text-sm font-medium transition-colors border-b-2 ${
+                pathname.startsWith("/dashboard")
+                  ? "border-[var(--primary)] text-[var(--primary)] font-semibold"
+                  : "border-transparent text-[var(--text-muted)] hover:text-[var(--primary)]"
+              }`}
             >
               Admin
             </Link>
@@ -158,7 +210,7 @@ function NavbarContent() {
                   )}
                   <button
                     onClick={handleLogout}
-                    className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-[var(--error)] hover:bg-red-50 transition-colors"
+                    className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-[var(--error)] hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors"
                   >
                     <LogOut size={15} />
                     Chiqish
@@ -222,24 +274,49 @@ function NavbarContent() {
           <Link
             href="/products"
             onClick={() => setMenuOpen(false)}
-            className={`py-3 text-sm font-medium transition-colors ${isShopActive ? "text-[var(--primary)] font-semibold" : "text-[var(--text-muted)]"
-              }`}
+            className={`py-3 text-sm font-medium transition-colors ${
+              isShopActive ? "text-[var(--primary)] font-semibold" : "text-[var(--text-muted)]"
+            }`}
           >
             Shop
           </Link>
-          <Link
-            href="/products?category=all"
-            onClick={() => setMenuOpen(false)}
-            className={`py-3 text-sm font-medium transition-colors ${isCategoriesActive ? "text-[var(--primary)] font-semibold" : "text-[var(--text-muted)]"
-              }`}
-          >
-            Categories
-          </Link>
+
+          {/* Mobile Categories Accordion */}
+          <div className="py-2">
+            <button
+              onClick={() => setMobileCatOpen(!mobileCatOpen)}
+              className="w-full flex items-center justify-between py-1 text-sm font-medium text-[var(--text-muted)]"
+            >
+              <span>Categories</span>
+              <ChevronDown size={16} className={`transition-transform duration-200 ${mobileCatOpen ? "rotate-180" : ""}`} />
+            </button>
+            {mobileCatOpen && (
+              <div className="pl-4 pt-2 flex flex-col gap-2">
+                {CATEGORIES.map((cat) => (
+                  <Link
+                    key={cat.slug}
+                    href={`/products?category=${cat.slug}`}
+                    onClick={() => {
+                      setMenuOpen(false);
+                      setMobileCatOpen(false);
+                    }}
+                    className={`text-sm py-1 ${
+                      categoryParam === cat.slug ? "text-[var(--primary)] font-semibold" : "text-[var(--text-muted)]"
+                    }`}
+                  >
+                    {cat.name}
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
+
           <Link
             href="/products?deals=true"
             onClick={() => setMenuOpen(false)}
-            className={`py-3 text-sm font-medium transition-colors ${isDealsActive ? "text-[var(--primary)] font-semibold" : "text-[var(--text-muted)]"
-              }`}
+            className={`py-3 text-sm font-medium transition-colors ${
+              isDealsActive ? "text-[var(--primary)] font-semibold" : "text-[var(--text-muted)]"
+            }`}
           >
             Deals
           </Link>
@@ -247,12 +324,19 @@ function NavbarContent() {
           {mounted && user ? (
             <>
               {(user.role === "ADMIN" || user.role === "MANAGER") && (
-                <Link href="/dashboard" onClick={() => setMenuOpen(false)} className="py-3 text-sm font-medium text-[var(--text-muted)] hover:text-[var(--primary)] transition-colors">
+                <Link
+                  href="/dashboard"
+                  onClick={() => setMenuOpen(false)}
+                  className="py-3 text-sm font-medium text-[var(--text-muted)] hover:text-[var(--primary)] transition-colors"
+                >
                   Admin panel
                 </Link>
               )}
               <button
-                onClick={() => { handleLogout(); setMenuOpen(false); }}
+                onClick={() => {
+                  handleLogout();
+                  setMenuOpen(false);
+                }}
                 className="flex items-center gap-2 py-3 text-sm font-medium text-[var(--error)] text-left"
               >
                 <LogOut size={15} />
@@ -260,7 +344,11 @@ function NavbarContent() {
               </button>
             </>
           ) : (
-            <Link href="/login" onClick={() => setMenuOpen(false)} className="py-3 text-sm font-medium text-[var(--text-muted)] hover:text-[var(--primary)] transition-colors">
+            <Link
+              href="/login"
+              onClick={() => setMenuOpen(false)}
+              className="py-3 text-sm font-medium text-[var(--text-muted)] hover:text-[var(--primary)] transition-colors"
+            >
               Kirish
             </Link>
           )}

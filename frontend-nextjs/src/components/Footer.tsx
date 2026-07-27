@@ -71,7 +71,7 @@ export default function Footer() {
             <div className="flex flex-col gap-1.5 text-xs text-[var(--text-muted)]">
               <p>124 Innovation Way</p>
               <p>Silicon District</p>
-              <p>Tashkent, Uzbekistan</p>
+              <p>Jizzax, Uzbekistan</p>
             </div>
 
             {/* Telegram - Ranglar to'g'rilandi (Aniq, tiniq va kontrastli) */}
