@@ -48,55 +48,61 @@ export default function CartPage() {
           {items.map((item) => (
             <div
               key={item.product.id}
-              className="bg-[var(--surface)] rounded-xl p-4 flex gap-4 items-center"
+              className="bg-[var(--surface)] rounded-xl p-4 flex flex-col sm:flex-row gap-4 sm:items-center justify-between"
             >
-              {/* Image */}
-              <div className="relative w-20 h-20 rounded-lg overflow-hidden bg-gray-100 shrink-0">
-                <Image
-                  src={item.product.image}
-                  alt={item.product.name}
-                  fill
-                  className="object-cover"
-                />
+              {/* Image + Info */}
+              <div className="flex gap-4 items-center min-w-0">
+                {/* Image */}
+                <div className="relative w-20 h-20 rounded-lg overflow-hidden bg-gray-100 shrink-0">
+                  <Image
+                    src={item.product.image}
+                    alt={item.product.name}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+
+                {/* Info */}
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs text-[var(--primary)] font-medium mb-0.5">{item.product.brand}</p>
+                  <h3 className="text-sm font-semibold text-[var(--text)] truncate">{item.product.name}</h3>
+                  <p className="text-sm font-bold text-[var(--text)] mt-1">{formatPrice(item.product.price)}</p>
+                </div>
               </div>
 
-              {/* Info */}
-              <div className="flex-1 min-w-0">
-                <p className="text-xs text-[var(--primary)] font-medium mb-0.5">{item.product.brand}</p>
-                <h3 className="text-sm font-semibold text-[var(--text)] truncate">{item.product.name}</h3>
-                <p className="text-sm font-bold text-[var(--text)] mt-1">{formatPrice(item.product.price)}</p>
-              </div>
+              {/* Controls: Quantity + Total + Delete (Mobilda pastki qatorda) */}
+              <div className="flex items-center justify-between sm:justify-end gap-4 shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-gray-100 dark:border-gray-800">
+                {/* Quantity */}
+                <div className="flex items-center border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden shrink-0">
+                  <button
+                    onClick={() => updateQuantity(item.product.id, item.quantity - 1)}
+                    className="w-8 h-8 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors font-medium"
+                  >
+                    −
+                  </button>
+                  <span className="w-8 h-8 flex items-center justify-center text-sm font-medium border-x border-gray-200 dark:border-gray-700">
+                    {item.quantity}
+                  </span>
+                  <button
+                    onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
+                    className="w-8 h-8 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors font-medium"
+                  >
+                    +
+                  </button>
+                </div>
 
-              {/* Quantity */}
-              <div className="flex items-center border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden shrink-0">
-                <button
-                  onClick={() => updateQuantity(item.product.id, item.quantity - 1)}
-                  className="w-8 h-8 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors font-medium"
-                >
-                  −
-                </button>
-                <span className="w-8 h-8 flex items-center justify-center text-sm font-medium border-x border-gray-200 dark:border-gray-700">
-                  {item.quantity}
-                </span>
-                <button
-                  onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
-                  className="w-8 h-8 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors font-medium"
-                >
-                  +
-                </button>
-              </div>
-
-              {/* Total + Delete */}
-              <div className="flex flex-col items-end gap-2 shrink-0">
-                <p className="text-sm font-bold text-[var(--text)]">
-                  {formatPrice(item.product.price * item.quantity)}
-                </p>
-                <button
-                  onClick={() => removeItem(item.product.id)}
-                  className="text-gray-400 hover:text-[var(--error)] transition-colors"
-                >
-                  <Trash2 size={16} />
-                </button>
+                {/* Total + Delete */}
+                <div className="flex items-center gap-3 shrink-0">
+                  <p className="text-sm font-bold text-[var(--text)] whitespace-nowrap">
+                    {formatPrice(item.product.price * item.quantity)}
+                  </p>
+                  <button
+                    onClick={() => removeItem(item.product.id)}
+                    className="text-gray-400 hover:text-[var(--error)] transition-colors p-1"
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                </div>
               </div>
             </div>
           ))}
