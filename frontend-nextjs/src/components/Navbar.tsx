@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { ShoppingCart, Search, Bell, User, Menu, X, LogOut } from "lucide-react";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, Suspense } from "react";
 import CartBadge from "@/components/CartBadge";
 
 interface UserData {
@@ -12,25 +12,35 @@ interface UserData {
   role: string;
 }
 
-export default function Navbar() {
+function NavbarContent() {
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [user, setUser] = useState<UserData | null>(null);
-  const [mounted] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const profileRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    const userStr = localStorage.getItem("user");
+  // Active link holatini aniqlash
+  const categoryParam = searchParams.get("category");
+  const dealsParam = searchParams.get("deals");
 
-    if (userStr) {
-      // Renderni bloklamaslik uchun asinxron navbatga qo'yamiz
-      setTimeout(() => {
+  const isDealsActive = pathname === "/products" && dealsParam === "true";
+  const isCategoriesActive = pathname === "/products" && categoryParam === "all";
+  const isShopActive = pathname === "/products" && !dealsParam && !categoryParam;
+
+  useEffect(() => {
+    setTimeout(() => {
+      setMounted(true);
+      const userStr = localStorage.getItem("user");
+      if (userStr) {
         setUser(JSON.parse(userStr));
-      }, 0);
-    }
+      }
+    }, 0);
   }, []);
 
   useEffect(() => {
@@ -62,18 +72,45 @@ export default function Navbar() {
         </Link>
 
         {/* Desktop Nav */}
-        <nav className="hidden md:flex items-center gap-6">
-          <Link href="/products" className="text-sm font-medium text-[var(--text)] hover:text-[var(--primary)] transition-colors border-b-2 border-[var(--primary)] pb-0.5">
+        <nav className="hidden md:flex items-center gap-7">
+          <Link
+            href="/products"
+            className={`py-1 text-sm font-medium transition-colors border-b-2 ${isShopActive
+              ? "border-[var(--primary)] text-[var(--primary)] font-semibold"
+              : "border-transparent text-[var(--text-muted)] hover:text-[var(--primary)]"
+              }`}
+          >
             Shop
           </Link>
-          <Link href="/products?category=all" className="text-sm font-medium text-[var(--text-muted)] hover:text-[var(--primary)] transition-colors">
+
+          <Link
+            href="/products?category=all"
+            className={`py-1 text-sm font-medium transition-colors border-b-2 ${isCategoriesActive
+              ? "border-[var(--primary)] text-[var(--primary)] font-semibold"
+              : "border-transparent text-[var(--text-muted)] hover:text-[var(--primary)]"
+              }`}
+          >
             Categories
           </Link>
-          <Link href="/products?deals=true" className="text-sm font-medium text-[var(--text-muted)] hover:text-[var(--primary)] transition-colors">
+
+          <Link
+            href="/products?deals=true"
+            className={`py-1 text-sm font-medium transition-colors border-b-2 ${isDealsActive
+              ? "border-[var(--primary)] text-[var(--primary)] font-semibold"
+              : "border-transparent text-[var(--text-muted)] hover:text-[var(--primary)]"
+              }`}
+          >
             Deals
           </Link>
+
           {user && (user.role === "ADMIN" || user.role === "MANAGER") && (
-            <Link href="/dashboard" className="text-sm font-medium text-[var(--text-muted)] hover:text-[var(--primary)] transition-colors">
+            <Link
+              href="/dashboard"
+              className={`py-1 text-sm font-medium transition-colors border-b-2 ${pathname.startsWith("/dashboard")
+                ? "border-[var(--primary)] text-[var(--primary)] font-semibold"
+                : "border-transparent text-[var(--text-muted)] hover:text-[var(--primary)]"
+                }`}
+            >
               Admin
             </Link>
           )}
@@ -156,7 +193,6 @@ export default function Navbar() {
       </div>
 
       {/* Search Bar */}
-
       {searchOpen && (
         <div className="border-t border-gray-200 dark:border-gray-800 px-4 py-3">
           <div className="max-w-7xl mx-auto">
@@ -179,16 +215,32 @@ export default function Navbar() {
           </div>
         </div>
       )}
+
       {/* Mobile Menu */}
       {menuOpen && (
         <div className="md:hidden border-t border-gray-200 dark:border-gray-800 px-4 py-2 flex flex-col divide-y divide-gray-100 dark:divide-gray-800">
-          <Link href="/products" onClick={() => setMenuOpen(false)} className="py-3 text-sm font-medium text-[var(--text)] hover:text-[var(--primary)] transition-colors">
+          <Link
+            href="/products"
+            onClick={() => setMenuOpen(false)}
+            className={`py-3 text-sm font-medium transition-colors ${isShopActive ? "text-[var(--primary)] font-semibold" : "text-[var(--text-muted)]"
+              }`}
+          >
             Shop
           </Link>
-          <Link href="/products?category=all" onClick={() => setMenuOpen(false)} className="py-3 text-sm font-medium text-[var(--text-muted)] hover:text-[var(--primary)] transition-colors">
+          <Link
+            href="/products?category=all"
+            onClick={() => setMenuOpen(false)}
+            className={`py-3 text-sm font-medium transition-colors ${isCategoriesActive ? "text-[var(--primary)] font-semibold" : "text-[var(--text-muted)]"
+              }`}
+          >
             Categories
           </Link>
-          <Link href="/products?deals=true" onClick={() => setMenuOpen(false)} className="py-3 text-sm font-medium text-[var(--text-muted)] hover:text-[var(--primary)] transition-colors">
+          <Link
+            href="/products?deals=true"
+            onClick={() => setMenuOpen(false)}
+            className={`py-3 text-sm font-medium transition-colors ${isDealsActive ? "text-[var(--primary)] font-semibold" : "text-[var(--text-muted)]"
+              }`}
+          >
             Deals
           </Link>
 
@@ -215,5 +267,13 @@ export default function Navbar() {
         </div>
       )}
     </header>
+  );
+}
+
+export default function Navbar() {
+  return (
+    <Suspense fallback={null}>
+      <NavbarContent />
+    </Suspense>
   );
 }
