@@ -20,7 +20,12 @@ export const useCartStore = create<CartStore>()(
       addItem: (product) => {
         const items = get().items;
         const existing = items.find((i) => i.product.id === product.id);
+
         if (existing) {
+          // Ombordagi sonidan oshib ketmasligini tekshiramiz
+          if (existing.quantity >= product.stock) {
+            return; // Agar teng yoki ko'p bo'lsa, ortiqcha qo'shmaymiz
+          }
           set({
             items: items.map((i) =>
               i.product.id === product.id
@@ -29,7 +34,10 @@ export const useCartStore = create<CartStore>()(
             ),
           });
         } else {
-          set({ items: [...items, { product, quantity: 1 }] });
+          // Omborda kamida 1 ta mahsulot bo'lsagina savatga qo'shamiz
+          if (product.stock > 0) {
+            set({ items: [...items, { product, quantity: 1 }] });
+          }
         }
       },
 
@@ -42,10 +50,16 @@ export const useCartStore = create<CartStore>()(
           get().removeItem(productId);
           return;
         }
+
         set({
-          items: get().items.map((i) =>
-            i.product.id === productId ? { ...i, quantity } : i
-          ),
+          items: get().items.map((i) => {
+            if (i.product.id === productId) {
+              // So'ralayotgan soni ombor qoldig'idan oshsa, maksimal stock sonini beramiz
+              const maxQuantity = Math.min(quantity, i.product.stock);
+              return { ...i, quantity: maxQuantity };
+            }
+            return i;
+          }),
         });
       },
 
