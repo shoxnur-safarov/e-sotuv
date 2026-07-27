@@ -4,14 +4,15 @@ export default function Footer() {
   return (
     <footer className="bg-[var(--surface)] border-t border-gray-200 dark:border-gray-800 mt-20">
       <div className="max-w-7xl mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 text-center md:text-left">
-          {/* Brand */}
-          <div className="flex flex-col gap-3">
+        {/* Mobilda 2 ustun (grid-cols-2), kompyuterda 4 ustun (md:grid-cols-4) */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-left">
+          {/* Brand - Mobilda 2 ustun enini to'liq egallaydi */}
+          <div className="col-span-2 md:col-span-1 flex flex-col gap-3">
             <h3 className="text-lg font-bold text-[var(--primary)]">E-Sotuv</h3>
             <p className="text-sm text-[var(--text-muted)] leading-relaxed">
               The leading platform for high-performance essentials and corporate lifestyle gear. Engineered for excellence.
             </p>
-            <div className="flex items-center gap-3 mt-2 justify-center md:justify-start">
+            <div className="flex items-center gap-3 mt-2">
               <button className="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center hover:bg-[var(--primary)] hover:text-white transition-colors text-sm">
                 🌐
               </button>
@@ -43,8 +44,8 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Office */}
-          <div className="flex flex-col gap-3">
+          {/* Office - Mobilda 2 ustun enini to'liq egallaydi */}
+          <div className="col-span-2 md:col-span-1 flex flex-col gap-3 pt-4 md:pt-0 border-t md:border-t-0 border-gray-100 dark:border-gray-800">
             <h4 className="text-sm font-semibold text-[var(--text)] uppercase tracking-wide">Office</h4>
             <div className="flex flex-col gap-2">
               <p className="text-sm text-[var(--text-muted)]">124 Innovation Way</p>
@@ -58,7 +59,7 @@ export default function Footer() {
         </div>
 
         {/* Bottom */}
-        <div className="border-t border-gray-200 dark:border-gray-800 mt-10 pt-6 flex flex-col md:flex-row items-center justify-between gap-3">
+        <div className="border-t border-gray-200 dark:border-gray-800 mt-10 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
           <p className="text-xs text-[var(--text-muted)]">© 2024 E-Sotuv Platform. All rights reserved.</p>
           <div className="flex items-center gap-4">
             <Link href="#" className="text-xs text-[var(--text-muted)] hover:text-[var(--primary)] transition-colors">Privacy Policy</Link>
