@@ -37,6 +37,7 @@ function StarRating({ rating }: { rating: number }) {
 
 function ProductsContent() {
   const searchParams = useSearchParams();
+  const deals = searchParams.get("deals"); // 👈 1. Deals parametrik ushlab olindi
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
@@ -50,7 +51,6 @@ function ProductsContent() {
     const urlSearch = searchParams.get("search") || "";
     const urlBrand = searchParams.get("brand") || "";
 
-    // Faqat shu ichki qismlarni xavfsiz o'raymiz:
     if (urlSearch) {
       setTimeout(() => {
         setSearch(urlSearch);
@@ -69,6 +69,7 @@ function ProductsContent() {
       setLoading(true);
       try {
         const params = new URLSearchParams();
+        if (deals === "true") params.append("deals", "true"); // 👈 2. API'ga parametr uzatildi
         if (search) params.append("search", search);
         if (selectedBrands.length === 1) params.append("brand", selectedBrands[0]);
         if (maxPrice < 10000000) params.append("max_price", String(maxPrice));
@@ -93,7 +94,7 @@ function ProductsContent() {
       }
     };
     fetchProducts();
-  }, [search, selectedBrands, maxPrice, minRating, sort]);
+  }, [search, selectedBrands, maxPrice, minRating, sort, deals]); // 👈 3. 'deals' qo'shildi
 
   const toggleBrand = (brand: string) => {
     setSelectedBrands((prev) =>
@@ -101,9 +102,10 @@ function ProductsContent() {
     );
   };
 
-  const filtered = selectedBrands.length > 1
-    ? products.filter((p) => selectedBrands.includes(p.brand))
-    : products;
+  // 👈 4. Frontend filtriga ham deals nazorati qo'shildi
+  const filtered = products
+    .filter((p) => (deals === "true" ? p.badge === "SALE" : true))
+    .filter((p) => (selectedBrands.length > 1 ? selectedBrands.includes(p.brand) : true));
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
@@ -119,7 +121,7 @@ function ProductsContent() {
         </div>
 
         <div className="flex items-center gap-3">
-         <input
+          <input
             type="text"
             placeholder="Qidirish..."
             value={search}
