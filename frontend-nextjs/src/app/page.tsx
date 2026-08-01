@@ -35,6 +35,7 @@ export default function HomePage() {
   const [showContactModal, setShowContactModal] = useState(false);
   const [contactForm, setContactForm] = useState({ name: "", email: "", company: "", message: "" });
   const [contactSuccess, setContactSuccess] = useState(false);
+  const [sendingContact, setSendingContact] = useState(false);
 
   useEffect(() => {
     const fetchFeatured = async () => {
@@ -58,14 +59,26 @@ export default function HomePage() {
     setTimeout(() => setJoinSuccess(false), 3000);
   };
 
-  const handleContact = () => {
-    if (!contactForm.name || !contactForm.email) return;
-    setContactSuccess(true);
-    setTimeout(() => {
-      setContactSuccess(false);
-      setShowContactModal(false);
-      setContactForm({ name: "", email: "", company: "", message: "" });
-    }, 2000);
+  const handleContact = async () => {
+    if (!contactForm.name || !contactForm.email || sendingContact) return;
+    setSendingContact(true);
+    try {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/contact`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(contactForm),
+      });
+      setContactSuccess(true);
+      setTimeout(() => {
+        setContactSuccess(false);
+        setShowContactModal(false);
+        setContactForm({ name: "", email: "", company: "", message: "" });
+      }, 2000);
+    } catch (err) {
+      console.error("Xabar yuborishda xatolik:", err);
+    } finally {
+      setSendingContact(false);
+    }
   };
 
   return (
@@ -310,9 +323,10 @@ export default function HomePage() {
                   </button>
                   <button
                     onClick={handleContact}
-                    className="flex-1 py-2.5 bg-[var(--primary)] text-white rounded-xl text-sm font-semibold hover:bg-[var(--primary-hover)] transition-colors"
+                    disabled={sendingContact}
+                    className="flex-1 py-2.5 bg-[var(--primary)] text-white rounded-xl text-sm font-semibold hover:bg-[var(--primary-hover)] transition-colors disabled:opacity-60"
                   >
-                    Yuborish
+                    {sendingContact ? "Yuborilmoqda..." : "Yuborish"}
                   </button>
                 </div>
               </div>

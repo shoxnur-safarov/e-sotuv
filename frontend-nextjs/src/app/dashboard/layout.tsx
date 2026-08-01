@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { BarChart2, ShoppingCart, Package, Settings, Plus, Menu, X } from "lucide-react";
+import { BarChart2, ShoppingCart, Package, Settings, Plus, Menu, X, Mail } from "lucide-react";
 import { useEffect, useState } from "react";
 
 const navItems = [
   { href: "/dashboard", label: "Analytics", icon: BarChart2 },
   { href: "/dashboard/products", label: "Products", icon: Package },
   { href: "/dashboard/orders", label: "Orders", icon: ShoppingCart },
+  { href: "/dashboard/messages", label: "Messages", icon: Mail },
 ];
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {

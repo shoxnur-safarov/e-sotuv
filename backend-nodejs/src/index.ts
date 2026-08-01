@@ -6,6 +6,7 @@ import authRoutes from "./routes/auth.routes";
 import productRoutes from "./routes/product.routes";
 import orderRoutes from "./routes/order.routes";
 import { errorMiddleware } from "./middlewares/error.middleware";
+import contactRoutes from "./routes/contact.routes";
 
 dotenv.config();
 
@@ -29,6 +30,7 @@ app.get("/", (req, res) => {
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/products", productRoutes);
 app.use("/api/v1/orders", orderRoutes);
+app.use("/api/v1/contact", contactRoutes);
 
 app.use(errorMiddleware);
 
