@@ -7,6 +7,7 @@ import productRoutes from "./routes/product.routes";
 import orderRoutes from "./routes/order.routes";
 import { errorMiddleware } from "./middlewares/error.middleware";
 import contactRoutes from "./routes/contact.routes";
+import newsletterRoutes from "./routes/newsletter.routes";
 
 dotenv.config();
 
@@ -31,6 +32,7 @@ app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/products", productRoutes);
 app.use("/api/v1/orders", orderRoutes);
 app.use("/api/v1/contact", contactRoutes);
+app.use("/api/v1/newsletter", newsletterRoutes);
 
 app.use(errorMiddleware);
 

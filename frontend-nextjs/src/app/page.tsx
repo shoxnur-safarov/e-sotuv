@@ -36,6 +36,7 @@ export default function HomePage() {
   const [contactForm, setContactForm] = useState({ name: "", email: "", company: "", message: "" });
   const [contactSuccess, setContactSuccess] = useState(false);
   const [sendingContact, setSendingContact] = useState(false);
+  const [joining, setJoining] = useState(false);
 
   useEffect(() => {
     const fetchFeatured = async () => {
@@ -52,11 +53,23 @@ export default function HomePage() {
     fetchFeatured();
   }, []);
 
-  const handleJoin = () => {
-    if (!email || !email.includes("@")) return;
-    setJoinSuccess(true);
-    setEmail("");
-    setTimeout(() => setJoinSuccess(false), 3000);
+  const handleJoin = async () => {
+    if (!email || !email.includes("@") || joining) return;
+    setJoining(true);
+    try {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/newsletter`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      setJoinSuccess(true);
+      setEmail("");
+      setTimeout(() => setJoinSuccess(false), 3000);
+    } catch (err) {
+      console.error("Obuna bo'lishda xatolik:", err);
+    } finally {
+      setJoining(false);
+    }
   };
 
   const handleContact = async () => {
@@ -222,9 +235,10 @@ export default function HomePage() {
                 />
                 <button
                   onClick={handleJoin}
-                  className="px-5 py-2.5 bg-white text-[var(--primary)] rounded-lg font-semibold text-sm hover:bg-gray-100 transition-colors"
+                  disabled={joining}
+                  className="px-5 py-2.5 bg-white text-[var(--primary)] rounded-lg font-semibold text-sm hover:bg-gray-100 transition-colors disabled:opacity-60"
                 >
-                  Join
+                  {joining ? "..." : "Join"}
                 </button>
               </div>
             )}
