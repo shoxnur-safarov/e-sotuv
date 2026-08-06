@@ -29,6 +29,7 @@ const statusOptions = ["PENDING", "SHIPPED", "DELIVERED"] as const;
 export default function DashboardOrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [filterStatus, setFilterStatus] = useState<string>("ALL");
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
@@ -36,15 +37,27 @@ export default function DashboardOrdersPage() {
 
   const fetchOrders = async () => {
     setLoading(true);
+    setError(null);
     try {
       const token = localStorage.getItem("token");
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/orders`, {
         headers: { Authorization: `Bearer ${token}` },
       });
+
+      if (!res.ok) {
+        if (res.status === 401 || res.status === 403) {
+          setError("Bu bo'limni ko'rish uchun ruxsatingiz yo'q.");
+        } else {
+          setError("Buyurtmalarni yuklashda xatolik yuz berdi.");
+        }
+        setOrders([]);
+        return;
+      }
+
       const data = await res.json();
-      setOrders(data || []);
-    } catch (err) {
-      console.error("Buyurtmalar yuklanmadi:", err);
+      setOrders(Array.isArray(data) ? data : []);
+    } catch {
+      setError("Server bilan bog'lanishda xatolik yuz berdi.");
     } finally {
       setLoading(false);
     }
@@ -160,7 +173,20 @@ export default function DashboardOrdersPage() {
         </div>
       </div>
 
-      {loading ? (
+       {error ? (
+        <div className="flex flex-col items-center justify-center h-64 text-center gap-3 bg-[var(--surface)] rounded-2xl">
+          <div className="w-14 h-14 rounded-full bg-red-50 dark:bg-red-950 flex items-center justify-center">
+            <span className="text-2xl">⚠️</span>
+          </div>
+          <p className="text-[var(--text)] font-semibold">{error}</p>
+          <button
+            onClick={fetchOrders}
+            className="mt-2 px-5 py-2 text-sm font-medium bg-[var(--primary)] text-white rounded-xl hover:bg-[var(--primary-hover)] transition-colors"
+          >
+            Qayta urinish
+          </button>
+        </div>
+      ) : loading ? (
         <div className="flex items-center justify-center h-64">
           <div className="w-10 h-10 border-4 border-[var(--primary)] border-t-transparent rounded-full animate-spin" />
         </div>

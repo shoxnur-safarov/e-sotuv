@@ -33,28 +33,41 @@ export default function DashboardPage() {
   const [chartType, setChartType] = useState<"line" | "bar">("line");
   const [analytics, setAnalytics] = useState<Analytics | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const fetchAnalytics = async () => {
     setLoading(true);
+    setError(null);
     try {
       const token = localStorage.getItem("token");
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/orders/analytics`, {
         headers: { Authorization: `Bearer ${token}` },
       });
+
+      if (!res.ok) {
+        if (res.status === 401 || res.status === 403) {
+          setError("Bu bo'limni ko'rish uchun ruxsatingiz yo'q.");
+        } else {
+          setError("Ma'lumotlarni yuklashda xatolik yuz berdi.");
+        }
+        setAnalytics(null);
+        return;
+      }
+
       const data = await res.json();
       setAnalytics(data);
-    } catch (err) {
-      console.error("Analitika yuklanmadi:", err);
+    } catch  {
+      setError("Server bilan bog'lanishda xatolik yuz berdi.");
     } finally {
       setLoading(false);
     }
   };
 
- useEffect(() => {
-  setTimeout(() => {
-    fetchAnalytics();
-  }, 0);
-}, []);
+  useEffect(() => {
+    setTimeout(() => {
+      fetchAnalytics();
+    }, 0);
+  }, []);
 
   const chartData = analytics?.monthlyRevenue.map((m) => ({
     month: m.month,
@@ -63,17 +76,34 @@ export default function DashboardPage() {
 
   const stats = analytics
     ? [
-        { label: "Total Users", value: analytics.totalUsers.toLocaleString() },
-        { label: "Total Orders", value: analytics.totalOrders.toLocaleString() },
-        { label: "Revenue", value: formatPrice(analytics.revenue) },
-        { label: "In Stock", value: analytics.inStock.toLocaleString() },
-      ]
+      { label: "Total Users", value: analytics.totalUsers.toLocaleString() },
+      { label: "Total Orders", value: analytics.totalOrders.toLocaleString() },
+      { label: "Revenue", value: formatPrice(analytics.revenue) },
+      { label: "In Stock", value: analytics.inStock.toLocaleString() },
+    ]
     : [];
 
   if (loading) {
     return (
       <div className="flex items-center justify-center h-96">
         <div className="w-10 h-10 border-4 border-[var(--primary)] border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center h-96 text-center gap-3">
+        <div className="w-14 h-14 rounded-full bg-red-50 dark:bg-red-950 flex items-center justify-center">
+          <span className="text-2xl">⚠️</span>
+        </div>
+        <p className="text-[var(--text)] font-semibold">{error}</p>
+        <button
+          onClick={fetchAnalytics}
+          className="mt-2 px-5 py-2 text-sm font-medium bg-[var(--primary)] text-white rounded-xl hover:bg-[var(--primary-hover)] transition-colors"
+        >
+          Qayta urinish
+        </button>
       </div>
     );
   }
