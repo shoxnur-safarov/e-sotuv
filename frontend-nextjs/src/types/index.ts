@@ -38,7 +38,7 @@ export interface OrderItem {
 export interface User {
   id: number;
   email: string;
-  role: "ADMIN" | "USER";
+  role: "ADMIN" | "MANAGER" | "USER";
 }
 
 export interface ApiResponse<T> {
