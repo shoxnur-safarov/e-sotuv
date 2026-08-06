@@ -5,7 +5,8 @@ import pool from "../config/postgres";
 
 export async function register(req: Request, res: Response) {
   try {
-    const { email, password, role = "USER" } = req.body;
+    const { email, password } = req.body;
+    const role = "USER";
 
     if (!email || !password) {
       res.status(400).json({ message: "Email va parol majburiy" });
