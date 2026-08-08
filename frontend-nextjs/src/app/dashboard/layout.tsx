@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { BarChart2, ShoppingCart, Package, Settings, Plus, Menu, X, Mail } from "lucide-react";
+import { BarChart2, ShoppingCart, Package, Settings, Menu, X, Mail } from "lucide-react";
 import { useEffect, useState } from "react";
 
 const navItems = [
@@ -112,14 +112,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           >
             <Settings size={18} />
             Settings
-          </Link>
-          <Link
-            href="/dashboard/products"
-            onClick={() => setSidebarOpen(false)}
-            className="flex items-center justify-center gap-2 mx-2 py-2.5 bg-[var(--primary)] text-white rounded-xl text-sm font-semibold hover:bg-[var(--primary-hover)] transition-colors"
-          >
-            <Plus size={16} />
-            New Product
           </Link>
         </div>
       </aside>
