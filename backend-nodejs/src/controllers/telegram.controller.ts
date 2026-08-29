@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { sendTelegramNotification } from "../utils/telegram";
 import pool from "../config/postgres";
+import { sendTelegramMessageTo } from "../utils/telegram";
 
 export async function handleTelegramWebhook(req: Request, res: Response) {
     try {
@@ -21,7 +22,11 @@ export async function handleTelegramWebhook(req: Request, res: Response) {
         console.log("Yuboruvchi ID:", senderChatId, "Admin ID:", adminChatId);
 
         if (senderChatId !== adminChatId) {
-            console.log("Admin emas, javob berilmaydi");
+            console.log("Admin emas, umumiy javob yuborilmoqda");
+            await sendTelegramMessageTo(
+                senderChatId,
+                "Salom! Bu — E-Sotuv platformasining shaxsiy bildirishnoma boti, umumiy foydalanish uchun emas.\n\nSavollaringiz bo'lsa, @shoxnursafarov bilan bog'laning."
+            );
             res.sendStatus(200);
             return;
         }

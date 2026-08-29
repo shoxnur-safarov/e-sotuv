@@ -24,3 +24,17 @@ export async function sendTelegramNotification(text: string): Promise<void> {
     console.error("TELEGRAM XATOSI:", err);
   }
 }
+export async function sendTelegramMessageTo(chatId: string, text: string) {
+  const token = process.env.TELEGRAM_BOT_TOKEN;
+  if (!token) return;
+
+  try {
+    await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ chat_id: chatId, text }),
+    });
+  } catch (err) {
+    console.error("Telegram xabar yuborishda xatolik:", err);
+  }
+}
