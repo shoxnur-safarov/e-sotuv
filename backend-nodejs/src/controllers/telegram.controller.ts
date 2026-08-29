@@ -53,6 +53,28 @@ export async function handleTelegramWebhook(req: Request, res: Response) {
             const count = result.rows[0].count;
             await sendTelegramNotification(`📊 So'nggi 30 kunda kelgan xabarlar: <b>${count}</b> ta`);
         }
+        if (text === "/oxirgi") {
+            const result = await pool.query(
+                `SELECT name, email, message, created_at FROM contact_messages ORDER BY created_at DESC LIMIT 5`
+            );
+
+            if (result.rows.length === 0) {
+                await sendTelegramNotification("Hozircha xabarlar yo'q");
+            } else {
+                let text = "📋 <b>So'nggi 5 ta xabar:</b>\n\n";
+                for (const row of result.rows) {
+                    const date = new Date(row.created_at).toLocaleString("uz-UZ", {
+                        timeZone: "Asia/Tashkent",
+                        day: "2-digit",
+                        month: "2-digit",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                    });
+                    text += `👤 ${row.name}\n📧 ${row.email}\n💬 ${row.message || "—"}\n🕐 ${date}\n\n`;
+                }
+                await sendTelegramNotification(text);
+            }
+        }
 
         res.sendStatus(200);
     } catch (err) {
