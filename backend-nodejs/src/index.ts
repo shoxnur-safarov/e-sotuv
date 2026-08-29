@@ -8,6 +8,7 @@ import orderRoutes from "./routes/order.routes";
 import { errorMiddleware } from "./middlewares/error.middleware";
 import contactRoutes from "./routes/contact.routes";
 import newsletterRoutes from "./routes/newsletter.routes";
+import telegramRoutes from "./routes/telegram.routes";
 
 dotenv.config();
 
@@ -33,7 +34,7 @@ app.use("/api/v1/products", productRoutes);
 app.use("/api/v1/orders", orderRoutes);
 app.use("/api/v1/contact", contactRoutes);
 app.use("/api/v1/newsletter", newsletterRoutes);
-
+app.use("/api/v1/telegram", telegramRoutes);
 app.use(errorMiddleware);
 
 app.listen(PORT, () => {

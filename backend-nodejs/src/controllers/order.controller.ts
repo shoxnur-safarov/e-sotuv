@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import pool from "../config/postgres";
 import { AuthRequest } from "../middlewares/auth.middleware";
+import { sendTelegramNotification } from "../utils/telegram";
 
 export async function createOrder(req: AuthRequest, res: Response) {
   try {
@@ -29,7 +30,9 @@ export async function createOrder(req: AuthRequest, res: Response) {
         [item.quantity, item.productId]
       );
     }
-
+     await sendTelegramNotification(
+      `🛒 <b>Yangi buyurtma!</b>\nID: ${orderId}\nSumma: ${totalAmount} so'm`
+    );
     res.status(201).json({ message: "Buyurtma yaratildi", orderId });
   } catch (err) {
     res.status(500).json({ message: "Server xatosi" });
