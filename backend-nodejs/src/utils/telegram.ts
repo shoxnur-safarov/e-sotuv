@@ -38,3 +38,25 @@ export async function sendTelegramMessageTo(chatId: string, text: string) {
     console.error("Telegram xabar yuborishda xatolik:", err);
   }
 }
+export async function sendTelegramMessageWithButtons(chatId: string, text: string, buttons: string[][]) {
+  const token = process.env.TELEGRAM_BOT_TOKEN;
+  if (!token) return;
+
+  try {
+    await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        chat_id: chatId,
+        text,
+        parse_mode: "HTML",
+        reply_markup: {
+          keyboard: buttons.map((row) => row.map((label) => ({ text: label }))),
+          resize_keyboard: true,
+        },
+      }),
+    });
+  } catch (err) {
+    console.error("Telegram xabar yuborishda xatolik:", err);
+  }
+}
