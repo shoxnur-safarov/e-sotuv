@@ -12,6 +12,10 @@ const pool = new Pool({
   ssl: process.env.DB_HOST === "localhost" ? false : { rejectUnauthorized: false },
 });
 
+pool.on("error", (err) => {
+  console.error("PostgreSQL pool xatosi (ushlandi, server yiqilmaydi):", err.message);
+});
+
 pool.connect((err) => {
   if (err) {
     console.error("PostgreSQL ulanish xatosi:", err.message);
