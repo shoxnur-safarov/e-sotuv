@@ -119,7 +119,6 @@ export async function handleTelegramWebhook(req: Request, res: Response) {
         const userResult = await pool.query("SELECT * FROM bot_users WHERE chat_id = $1", [senderChatId]);
 
         if (userResult.rows.length === 0) {
-            // Yangi foydalanuvchi — ismini so'raymiz
             await pool.query("INSERT INTO bot_users (chat_id, state) VALUES ($1, 'awaiting_name')", [senderChatId]);
             await sendTelegramMessageTo(senderChatId, "Salom! Botdan foydalanish uchun avval ismingizni kiriting:");
             res.sendStatus(200);
@@ -136,16 +135,40 @@ export async function handleTelegramWebhook(req: Request, res: Response) {
         }
 
         if (botUser.state === "awaiting_phone") {
-            await pool.query("UPDATE bot_users SET phone = $1, state = 'done' WHERE chat_id = $2", [text, senderChatId]);
-            await sendTelegramMessageWithButtons(
-                senderChatId,
-                "Ro'yxatdan o'tish yakunlandi! 🎉\n\nQuyidagi tugmalardan foydalaning:",
-                [["🛍 Mahsulotlarni ko'rish"]]
-            );
+            await pool.query("UPDATE bot_users SET phone = $1, state = 'awaiting_purpose' WHERE chat_id = $2", [text, senderChatId]);
+            await sendTelegramMessageTo(senderChatId, "Nega botdan foydalanmoqchisiz? Qisqacha yozing:");
             res.sendStatus(200);
             return;
         }
 
+        if (botUser.state === "awaiting_purpose") {
+            await pool.query("UPDATE bot_users SET purpose = $1, state = 'pending_approval' WHERE chat_id = $2", [text, senderChatId]);
+            await sendTelegramMessageTo(senderChatId, "So'rovingiz adminga yuborildi. Tez orada javob berishadi ⏳");
+
+            const updatedUser = await pool.query("SELECT name, phone FROM bot_users WHERE chat_id = $1", [senderChatId]);
+            const u = updatedUser.rows[0];
+            await sendTelegramNotification(
+                `🔔 <b>Yangi so'rov!</b>\n\n👤 Ism: ${u.name}\n📱 Telefon: ${u.phone}\n💬 Maqsad: ${text}\n🆔 Chat ID: ${senderChatId}\n\nHozircha ruxsat/rad etish tugmalari keyingi bosqichda qo'shiladi.`
+            );
+
+            res.sendStatus(200);
+            return;
+        }
+
+        if (botUser.state === "pending_approval") {
+            await sendTelegramMessageTo(senderChatId, "So'rovingiz hali ko'rib chiqilmoqda. Iltimos, kuting ⏳");
+            res.sendStatus(200);
+            return;
+        }
+
+        if (botUser.approval_status === "rejected") {
+            await sendTelegramMessageTo(senderChatId, "Kechirasiz, so'rovingiz rad etilgan.");
+            res.sendStatus(200);
+            return;
+        }
+
+        // approval_status === 'approved' bo'lsa, davom etadi (keyingi qismda to'ldiramiz)
+        res.sendStatus(200);
         if (text === "🏠 Bosh menyu" || text === "/start") {
             await sendTelegramMessageWithButtons(
                 senderChatId,
