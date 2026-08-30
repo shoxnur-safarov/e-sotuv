@@ -60,3 +60,41 @@ export async function sendTelegramMessageWithButtons(chatId: string, text: strin
     console.error("Telegram xabar yuborishda xatolik:", err);
   }
 }
+export async function sendTelegramMessageWithInlineButtons(
+  chatId: string,
+  text: string,
+  buttons: { text: string; callback_data: string }[][]
+) {
+  const token = process.env.TELEGRAM_BOT_TOKEN;
+  if (!token) return;
+
+  try {
+    await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        chat_id: chatId,
+        text,
+        parse_mode: "HTML",
+        reply_markup: { inline_keyboard: buttons },
+      }),
+    });
+  } catch (err) {
+    console.error("Telegram xabar yuborishda xatolik:", err);
+  }
+}
+
+export async function answerCallbackQuery(callbackQueryId: string, text?: string) {
+  const token = process.env.TELEGRAM_BOT_TOKEN;
+  if (!token) return;
+
+  try {
+    await fetch(`https://api.telegram.org/bot${token}/answerCallbackQuery`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ callback_query_id: callbackQueryId, text: text || "" }),
+    });
+  } catch (err) {
+    console.error("Callback javobida xatolik:", err);
+  }
+}
