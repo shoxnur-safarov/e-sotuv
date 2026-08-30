@@ -8,6 +8,7 @@ import {
 } from "../utils/telegram";
 import pool from "../config/postgres";
 
+// Yordamchi funksiyani asosiy handler'dan tashqariga chiqardik
 async function sendMessagesList(interval: string, label: string) {
     const result = await pool.query(
         `SELECT name, email, message, created_at FROM contact_messages WHERE created_at >= ${interval} ORDER BY created_at DESC`
@@ -32,6 +33,12 @@ async function sendMessagesList(interval: string, label: string) {
 
 export async function handleTelegramWebhook(req: Request, res: Response) {
     try {
+        const secretHeader = req.headers["x-telegram-bot-api-secret-token"];
+        if (secretHeader !== process.env.TELEGRAM_WEBHOOK_SECRET) {
+            res.sendStatus(401);
+            return;
+        }
+
         const adminChatId = String(process.env.TELEGRAM_CHAT_ID);
 
         // ===== CALLBACK QUERY (tugma bosilganda) =====
@@ -172,6 +179,7 @@ export async function handleTelegramWebhook(req: Request, res: Response) {
                     await sendTelegramNotification(list);
                 }
             }
+
             if (text === "🗑 Foydalanuvchini o'chirish") {
                 const result = await pool.query(
                     "SELECT chat_id, name, phone FROM bot_users ORDER BY created_at DESC"
