@@ -203,6 +203,7 @@ export async function handleTelegramWebhook(req: Request, res: Response) {
                 [["🛍 Mahsulotlarni ko'rish"]]
             );
         }
+        res.sendStatus(200);
     } catch (err) {
         console.error("WEBHOOK XATOSI:", err);
         res.sendStatus(200);
