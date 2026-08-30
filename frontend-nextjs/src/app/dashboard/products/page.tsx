@@ -11,13 +11,14 @@ interface Product {
   name: string;
   price: number;
   brand: string;
+  category: string;
   stock: number;
   image: string;
   badge: string | null;
   rating: number;
 }
 
-const emptyForm = { name: "", price: "", brand: "Apple", stock: "", image: "", badge: "", rating: "" };
+const emptyForm = { name: "", price: "", brand: "Apple", category: "Watches", stock: "", image: "", badge: "", rating: "" };
 
 export default function DashboardProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -65,6 +66,7 @@ export default function DashboardProductsPage() {
       name: product.name,
       price: String(product.price),
       brand: product.brand,
+      category: product.category,
       stock: String(product.stock),
       image: product.image,
       badge: product.badge || "",
@@ -85,7 +87,7 @@ export default function DashboardProductsPage() {
       image: form.image || "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600&h=600&fit=crop",
       badge: form.badge || null,
       rating: Number(form.rating) || 0,
-      category: form.brand,
+      category: form.category,
       description: `${form.name} — sifatli mahsulot.`,
     };
 
@@ -307,6 +309,18 @@ export default function DashboardProductsPage() {
                     ))}
                   </select>
                 </div>
+              </div>
+              <div className="flex flex-col gap-1">
+                <label className="text-sm font-medium text-[var(--text)]">Kategoriya</label>
+                <select
+                  value={form.category}
+                  onChange={(e) => setForm({ ...form, category: e.target.value })}
+                  className="px-4 py-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-[var(--background)] text-[var(--text)] outline-none focus:border-[var(--primary)] transition-colors text-sm"
+                >
+                  {["Watches", "Audio", "Laptops", "Tablets", "Keyboards", "Accessories"].map((c) => (
+                    <option key={c} value={c}>{c}</option>
+                  ))}
+                </select>
               </div>
 
               <div className="flex flex-col gap-1">
