@@ -37,70 +37,80 @@ export async function handleTelegramWebhook(req: Request, res: Response) {
         const adminChatId = String(process.env.TELEGRAM_CHAT_ID);
         const text = (message.text || "").trim();
 
-        // ADMIN BO'LSA — eski mantiq ishlaydi
         if (senderChatId === adminChatId) {
-            if (text === "/start") {
-                await sendTelegramNotification("👋 Xush kelibsiz, Admin!");
-            }
-            if (text === "/bugun") {
-                const result = await pool.query(`SELECT COUNT(*) FROM contact_messages WHERE created_at >= CURRENT_DATE`);
-                await sendTelegramNotification(`📊 Bugun kelgan xabarlar: <b>${result.rows[0].count}</b> ta`);
-            }
-            if (text === "/hafta") {
-                const result = await pool.query(`SELECT COUNT(*) FROM contact_messages WHERE created_at >= NOW() - INTERVAL '7 days'`);
-                await sendTelegramNotification(`📊 So'nggi 7 kunda kelgan xabarlar: <b>${result.rows[0].count}</b> ta`);
-            }
-            if (text === "/oy") {
-                const result = await pool.query(`SELECT COUNT(*) FROM contact_messages WHERE created_at >= NOW() - INTERVAL '30 days'`);
-                await sendTelegramNotification(`📊 So'nggi 30 kunda kelgan xabarlar: <b>${result.rows[0].count}</b> ta`);
-            }
-            if (text === "/oxirgi") {
-                await sendMessagesList("NOW() - INTERVAL '9999 days'", "Barcha vaqt");
-            }
-            if (text === "/bugun_xabarlar") {
-                await sendMessagesList("CURRENT_DATE", "Bugun");
-            }
-            if (text === "/hafta_xabarlar") {
-                await sendMessagesList("NOW() - INTERVAL '7 days'", "So'nggi 7 kunda");
-            }
-            if (text === "/oy_xabarlar") {
-                await sendMessagesList("NOW() - INTERVAL '30 days'", "So'nggi 30 kunda");
-            }
-            if (text === "/mahsulotlar_soni") {
-                const result = await pool.query("SELECT COUNT(*) FROM products");
-                await sendTelegramNotification(`📦 Jami mahsulotlar: <b>${result.rows[0].count}</b> ta`);
+            if (text === "/start" || text === "🏠 Bosh menyu") {
+                await sendTelegramMessageWithButtons(
+                    senderChatId,
+                    "👋 <b>Xush kelibsiz, Admin!</b>\n\nKerakli bo'limni tanlang:",
+                    [
+                        ["📊 Bugungi statistika", "📅 Haftalik statistika"],
+                        ["🗓 Oylik statistika", "📩 So'nggi xabarlar"],
+                        ["📦 Mahsulotlar ro'yxati", "🆕 Yangi mahsulotlar"],
+                        ["👥 Ro'yxatdan o'tganlar"],
+                    ]
+                );
             }
 
-            if (text === "/mahsulotlar_royxati") {
+            if (text === "📊 Bugungi statistika") {
+                const result = await pool.query("SELECT COUNT(*) FROM contact_messages WHERE created_at >= CURRENT_DATE");
+                await sendTelegramNotification(`📊 Bugun kelgan xabarlar: <b>${result.rows[0].count}</b> ta`);
+            }
+
+            if (text === "📅 Haftalik statistika") {
+                const result = await pool.query("SELECT COUNT(*) FROM contact_messages WHERE created_at >= NOW() - INTERVAL '7 days'");
+                await sendTelegramNotification(`📅 So'nggi 7 kunda kelgan xabarlar: <b>${result.rows[0].count}</b> ta`);
+            }
+
+            if (text === "🗓 Oylik statistika") {
+                const result = await pool.query("SELECT COUNT(*) FROM contact_messages WHERE created_at >= NOW() - INTERVAL '30 days'");
+                await sendTelegramNotification(`🗓 So'nggi 30 kunda kelgan xabarlar: <b>${result.rows[0].count}</b> ta`);
+            }
+
+            if (text === "📩 So'nggi xabarlar") {
+                await sendMessagesList("NOW() - INTERVAL '9999 days'", "Barcha vaqt");
+            }
+
+            if (text === "📦 Mahsulotlar ro'yxati") {
                 const result = await pool.query("SELECT name, price, stock FROM products ORDER BY id DESC");
                 if (result.rows.length === 0) {
                     await sendTelegramNotification("Hozircha mahsulotlar yo'q");
                 } else {
                     let list = `📦 <b>Barcha mahsulotlar (${result.rows.length} ta):</b>\n\n`;
                     for (const row of result.rows) {
-                        list += `• ${row.name} — ${row.price} so'm (${row.stock} ta)\n`;
+                        const priceFormatted = Number(row.price).toLocaleString("uz-UZ");
+                        list += `• <b>${row.name}</b> — ${priceFormatted} so'm (${row.stock} ta)\n`;
                     }
                     await sendTelegramNotification(list);
                 }
             }
 
-            if (text === "/yangi_mahsulotlar_soni") {
-                const result = await pool.query("SELECT COUNT(*) FROM products WHERE created_at >= NOW() - INTERVAL '7 days'");
-                await sendTelegramNotification(`🆕 So'nggi 7 kunda qo'shilgan mahsulotlar: <b>${result.rows[0].count}</b> ta`);
-            }
-
-            if (text === "/yangi_mahsulotlar_royxati") {
+            if (text === "🆕 Yangi mahsulotlar") {
                 const result = await pool.query("SELECT name, price, stock FROM products WHERE created_at >= NOW() - INTERVAL '7 days' ORDER BY id DESC");
                 if (result.rows.length === 0) {
                     await sendTelegramNotification("So'nggi 7 kunda yangi mahsulot yo'q");
                 } else {
                     let list = `🆕 <b>Yangi mahsulotlar (${result.rows.length} ta):</b>\n\n`;
                     for (const row of result.rows) {
-                        list += `• ${row.name} — ${row.price} so'm (${row.stock} ta)\n`;
+                        const priceFormatted = Number(row.price).toLocaleString("uz-UZ");
+                        list += `• <b>${row.name}</b> — ${priceFormatted} so'm (${row.stock} ta)\n`;
                     }
                     await sendTelegramNotification(list);
                 }
             }
+
+            if (text === "👥 Ro'yxatdan o'tganlar") {
+                const result = await pool.query("SELECT name, phone, created_at FROM bot_users WHERE state = 'done' ORDER BY created_at DESC");
+                if (result.rows.length === 0) {
+                    await sendTelegramNotification("Hozircha hech kim ro'yxatdan o'tmagan");
+                } else {
+                    let list = `👥 <b>Ro'yxatdan o'tganlar (${result.rows.length} ta):</b>\n\n`;
+                    for (const row of result.rows) {
+                        list += `• <b>${row.name}</b> — ${row.phone}\n`;
+                    }
+                    await sendTelegramNotification(list);
+                }
+            }
+
             res.sendStatus(200);
             return;
         }
