@@ -146,13 +146,43 @@ export async function handleTelegramWebhook(req: Request, res: Response) {
             return;
         }
 
-        // state === 'done' bo'lsa
-        if (text === "🛍 Mahsulotlarni ko'rish") {
-            const result = await pool.query("SELECT name, price, stock FROM products WHERE stock > 0 ORDER BY id DESC LIMIT 10");
+        if (text === "🏠 Bosh menyu" || text === "/start") {
+            await sendTelegramMessageWithButtons(
+                senderChatId,
+                "Assalomu alaykum! Quyidagi tugmalardan foydalaning:",
+                [["🛍 Mahsulotlarni ko'rish"]]
+            );
+        } else if (text === "🛍 Mahsulotlarni ko'rish") {
+            await sendTelegramMessageWithButtons(
+                senderChatId,
+                "Qaysi kategoriyani ko'rmoqchisiz?",
+                [
+                    ["⌚ Watches", "🎧 Audio"],
+                    ["💻 Laptops", "📱 Tablets"],
+                    ["⌨️ Keyboards", "🎒 Accessories"],
+                    ["🏠 Bosh menyu"],
+                ]
+            );
+        } else if (["⌚ Watches", "🎧 Audio", "💻 Laptops", "📱 Tablets", "⌨️ Keyboards", "🎒 Accessories"].includes(text)) {
+            const categoryMap: Record<string, string> = {
+                "⌚ Watches": "Watches",
+                "🎧 Audio": "Audio",
+                "💻 Laptops": "Laptops",
+                "📱 Tablets": "Tablets",
+                "⌨️ Keyboards": "Keyboards",
+                "🎒 Accessories": "Accessories",
+            };
+            const category = categoryMap[text];
+
+            const result = await pool.query(
+                "SELECT name, price, stock FROM products WHERE category = $1 AND stock > 0 ORDER BY id DESC LIMIT 10",
+                [category]
+            );
+
             if (result.rows.length === 0) {
-                await sendTelegramMessageTo(senderChatId, "Hozircha mahsulotlar mavjud emas");
+                await sendTelegramMessageTo(senderChatId, `${category} kategoriyasida hozircha mahsulot yo'q`);
             } else {
-                await sendTelegramMessageTo(senderChatId, `🛍 <b>Mavjud mahsulotlar (${result.rows.length} ta):</b>`);
+                await sendTelegramMessageTo(senderChatId, `🛍 <b>${category} (${result.rows.length} ta):</b>`);
                 for (const row of result.rows) {
                     const priceFormatted = Number(row.price).toLocaleString("uz-UZ");
                     await sendTelegramMessageTo(
@@ -160,8 +190,12 @@ export async function handleTelegramWebhook(req: Request, res: Response) {
                         `📦 <b>${row.name}</b>\n💰 ${priceFormatted} so'm\n📊 Omborda: ${row.stock} ta`
                     );
                 }
-                await sendTelegramMessageWithButtons(senderChatId, "Yana ko'rishni xohlaysizmi?", [["🛍 Mahsulotlarni ko'rish"]]);
             }
+
+            await sendTelegramMessageWithButtons(senderChatId, "Yana ko'rishni xohlaysizmi?", [
+                ["🛍 Mahsulotlarni ko'rish"],
+                ["🏠 Bosh menyu"],
+            ]);
         } else {
             await sendTelegramMessageWithButtons(
                 senderChatId,
@@ -169,7 +203,6 @@ export async function handleTelegramWebhook(req: Request, res: Response) {
                 [["🛍 Mahsulotlarni ko'rish"]]
             );
         }
-        res.sendStatus(200);
     } catch (err) {
         console.error("WEBHOOK XATOSI:", err);
         res.sendStatus(200);
