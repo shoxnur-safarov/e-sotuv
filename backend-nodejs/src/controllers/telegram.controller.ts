@@ -135,18 +135,22 @@ export async function handleTelegramWebhook(req: Request, res: Response) {
             res.sendStatus(200);
             return;
         }
-        // state === 'done' bo'lsa
+
         // state === 'done' bo'lsa
         if (text === "🛍 Mahsulotlarni ko'rish") {
-            const result = await pool.query("SELECT name, price FROM products WHERE stock > 0 ORDER BY id DESC LIMIT 20");
+            const result = await pool.query("SELECT name, price, stock FROM products WHERE stock > 0 ORDER BY id DESC LIMIT 10");
             if (result.rows.length === 0) {
                 await sendTelegramMessageTo(senderChatId, "Hozircha mahsulotlar mavjud emas");
             } else {
-                let list = "🛍 <b>Mavjud mahsulotlar:</b>\n\n";
+                await sendTelegramMessageTo(senderChatId, `🛍 <b>Mavjud mahsulotlar (${result.rows.length} ta):</b>`);
                 for (const row of result.rows) {
-                    list += `• ${row.name} — ${row.price} so'm\n`;
+                    const priceFormatted = Number(row.price).toLocaleString("uz-UZ");
+                    await sendTelegramMessageTo(
+                        senderChatId,
+                        `📦 <b>${row.name}</b>\n💰 ${priceFormatted} so'm\n📊 Omborda: ${row.stock} ta`
+                    );
                 }
-                await sendTelegramMessageWithButtons(senderChatId, list, [["🛍 Mahsulotlarni ko'rish"]]);
+                await sendTelegramMessageWithButtons(senderChatId, "Yana ko'rishni xohlaysizmi?", [["🛍 Mahsulotlarni ko'rish"]]);
             }
         } else {
             await sendTelegramMessageWithButtons(
